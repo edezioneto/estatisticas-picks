@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estatísticas de Futebol</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      text-align: center;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      width: 90%;
+      max-width: 400px;
+    }
+    #ResultadoLabel {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    img {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Estatísticas de Futebol</h1>
+  <input type="text" id="TimeInput" placeholder="Digite o nome do time">
+  <br>
+  <button onclick="buscarTime()" id="BuscarButton">Buscar</button>
+  <div id="ResultadoLabel"></div>
+
+  <script>
+    async function buscarTime() {
+      const time = document.getElementById('TimeInput').value.trim();
+      const resultado = document.getElementById('ResultadoLabel');
+
+      if (!time) {
+        resultado.textContent = "Por favor, digite o nome de um time.";
+        return;
+      }
+
+      resultado.textContent = "Buscando...";
+
+      const url = `https://api-football-v1.p.rapidapi.com/v3/teams?search=${encodeURIComponent(time)}`;
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': '895435c199f64b0db24b479c94206fcb',
+          'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error("Resposta da API não foi ok.");
+
+        const data = await response.json();
+
+        if (data.response && data.response.length > 0 && data.response[0].team) {
+          const team = data.response[0].team;
+          resultado.innerHTML = `
+            <p><strong>Time:</strong> ${team.name}</p>
+            <p><img src="${team.logo}" alt="Logo do time" width="100"></p>
+            <p><strong>País:</strong> ${team.country}</p>
+            <p><strong>Fundado em:</strong> ${team.founded ?? 'Desconhecido'}</p>
+          `;
+        } else {
+          resultado.textContent = "Time não encontrado.";
+        }
+      } catch (error) {
+        resultado.textContent = "Erro ao buscar informações. Verifique sua conexão ou API Key.";
+        console.error("Erro:", error);
+      }
+    }
+  </script>
+</body>
+</html>
