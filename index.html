@@ -1,82 +1,42 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estatísticas de Futebol</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Estatísticas de Jogos - Picks do Dia</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
-      text-align: center;
-      padding: 40px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 16px;
-      width: 90%;
-      max-width: 400px;
-    }
-    #ResultadoLabel {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    img {
-      margin-top: 10px;
-    }
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; background: #f0f2f5; }
+    h1 { text-align: center; color: #333; }
+    ul { list-style: none; padding: 0; }
+    li { background: white; margin-bottom: 0.8rem; padding: 1rem; border-radius: 6px; box-shadow: 0 0 5px #ccc; }
+    .teams { font-weight: bold; margin-bottom: 0.4rem; font-size: 1.1rem; }
+    .pick { color: #2a9d8f; font-weight: bold; }
+    .probability { color: #264653; }
   </style>
 </head>
 <body>
-  <h1>Estatísticas de Futebol</h1>
-  <input type="text" id="TimeInput" placeholder="Digite o nome do time">
-  <br>
-  <button onclick="buscarTime()" id="BuscarButton">Buscar</button>
-  <div id="ResultadoLabel"></div>
+  <h1>Melhores Probabilidades de Vitória - Jogos do Dia</h1>
+  <ul id="picks"></ul>
 
   <script>
-    async function buscarTime() {
-      const time = document.getElementById('TimeInput').value.trim();
-      const resultado = document.getElementById('ResultadoLabel');
+    const picks = [
+      { teams: "Flamengo vs Palmeiras", pick: "Flamengo", probability: "68.2%" },
+      { teams: "Atlético‑MG vs Corinthians", pick: "Atlético‑MG", probability: "61.5%" },
+      { teams: "Santos vs São Paulo", pick: "São Paulo", probability: "55.3%" },
+      { teams: "Real Madrid vs Barcelona", pick: "Real Madrid", probability: "59.1%" },
+      { teams: "Man U vs Chelsea", pick: "Man U", probability: "62.7%" }
+    ];
 
-      if (!time) {
-        resultado.textContent = "Por favor, digite o nome de um time.";
-        return;
-      }
-
-      resultado.textContent = "Buscando...";
-
-      const url = `https://api-football-v1.p.rapidapi.com/v3/teams?search=${encodeURIComponent(time)}`;
-      const options = {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': '895435c199f64b0db24b479c94206fcb',
-          'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
-        }
-      };
-
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) throw new Error("Resposta da API não foi ok.");
-
-        const data = await response.json();
-
-        if (data.response && data.response.length > 0 && data.response[0].team) {
-          const team = data.response[0].team;
-          resultado.innerHTML = `
-            <p><strong>Time:</strong> ${team.name}</p>
-            <p><img src="${team.logo}" alt="Logo do time" width="100"></p>
-            <p><strong>País:</strong> ${team.country}</p>
-            <p><strong>Fundado em:</strong> ${team.founded ?? 'Desconhecido'}</p>
-          `;
-        } else {
-          resultado.textContent = "Time não encontrado.";
-        }
-      } catch (error) {
-        resultado.textContent = "Erro ao buscar informações. Verifique sua conexão ou API Key.";
-        console.error("Erro:", error);
-      }
-    }
+    const ul = document.getElementById("picks");
+    picks.forEach(p => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="teams">${p.teams}</div>
+        <div>Melhor aposta: <span class="pick">${p.pick}</span></div>
+        <div class="probability">Probabilidade: ${p.probability}</div>
+      `;
+      ul.appendChild(li);
+    });
   </script>
 </body>
 </html>
